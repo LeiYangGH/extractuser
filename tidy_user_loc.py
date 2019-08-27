@@ -21,6 +21,7 @@ def write(lines, out_file):
 
 # N 51°31' 0'' / W 0°2' 0''
 reg_locnums_1 = re.compile(r"N\s*(\d+)\s*°\s*(\d+)\s*'\s*(\d+)\s*''\s*[\s\S]*W\s*(\d+)\s*°\s*(\d+)\s*'\s*(\d+)\s*''\s*")
+reg_locnums_float = re.compile(r"[\d\.]{6,}\s*,\s*-*[\d\.]{6,}")
 
 
 def replace_chars(line):
@@ -110,7 +111,7 @@ if __name__ == "__main__":
     print(len(alllines))
     alllines = [replace_chars(line) for line in alllines]
 
-    loc_lines = [line for line in alllines if reg_locnums_1.search(line)]
+    loc_lines = [line for line in alllines if reg_locnums_1.search(line) or reg_locnums_float.search(line)]
     non_loc_lines = [line for line in alllines if not reg_locnums_1.search(line)]
 
     loc_lines = [tidy_locnums(line) for line in loc_lines]
