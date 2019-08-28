@@ -2,9 +2,10 @@
 
 import re
 import sys
+import os
 
 
-def read(filename='huawei_user_loc_check.txt'):
+def read(filename='input/huawei_user_loc_check.txt'):
     with open(filename, 'r', encoding='utf-8') as file:
         return [line.strip() for line in file.readlines()]
 
@@ -122,6 +123,8 @@ if __name__ == "__main__":
 
     print(len(loc_lines))
     print(len(non_loc_lines))
-    write(loc_lines,"output_loc_lines.txt")
-    write(non_loc_lines,"output_non_loc_lines.txt")
+    if not os.path.isdir('output/'):
+        os.makedirs('output/')
+    write(loc_lines,"output/loc_lines.txt")
+    write(non_loc_lines,"output/non_loc_lines.txt")
     print('all done.')
