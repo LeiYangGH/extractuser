@@ -113,7 +113,7 @@ if __name__ == "__main__":
     alllines = [replace_chars(line) for line in alllines]
 
     loc_lines = [line for line in alllines if reg_locnums_1.search(line) or reg_locnums_float.search(line)]
-    non_loc_lines = [line for line in alllines if not reg_locnums_1.search(line)]
+    non_loc_lines = [line for line in alllines if not (reg_locnums_1.search(line) or reg_locnums_float.search(line))]
 
     loc_lines = [tidy_locnums(line) for line in loc_lines]
 
