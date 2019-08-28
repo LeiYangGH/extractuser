@@ -22,7 +22,7 @@ def write(lines, out_file):
 
 # N 51°31' 0'' / W 0°2' 0''
 reg_locnums_1 = re.compile(r"N\s*(\d+)\s*°\s*(\d+)\s*'\s*(\d+)\s*''\s*[\s\S]*W\s*(\d+)\s*°\s*(\d+)\s*'\s*(\d+)\s*''\s*")
-reg_locnums_float = re.compile(r"[\d\.]{6,}\s*,\s*-*[\d\.]{6,}")
+reg_locnums_float = re.compile(r"([\d\.]{6,})\s*,\s*(-*[\d\.]{6,})")
 
 
 def replace_chars(line):
@@ -37,7 +37,7 @@ def tidy_locnums(line):
     if match:
         print(line)
         try:
-            line = reg_locnums_1.sub(r'\1.\2\3,\4.\5\6', line)
+            line = reg_locnums_1.sub(r'\1.\2\3\t\4.\5\6', line)
             print(line)
             print('-' * 70)
         except Exception as e:
@@ -45,6 +45,19 @@ def tidy_locnums(line):
             print(line)
     return line
 
+def tidy_locnums_comma2tab(line):
+    match = reg_locnums_float.search(line)
+    if match:
+        # print(line)
+        try:
+            line = reg_locnums_float.sub(r'\1\t\2', line)
+            # print(line)
+            # print('-' * 70)
+        except Exception as e:
+            pass
+        #     print('*' * 70)
+        #     print(line)
+    return line
 
 reg_comma = re.compile(r"([^/^,\d]{5,})\s*[,，,/][\s\S]*")
 
@@ -112,10 +125,15 @@ if __name__ == "__main__":
     print(len(alllines))
     alllines = [replace_chars(line) for line in alllines]
 
-    loc_lines = [line for line in alllines if reg_locnums_1.search(line) or reg_locnums_float.search(line)]
+    loc_lines_toconvert = [line for line in alllines if reg_locnums_1.search(line)]
+    loc_lines_alreadynums = [line for line in alllines if reg_locnums_float.search(line)]
     non_loc_lines = [line for line in alllines if not (reg_locnums_1.search(line) or reg_locnums_float.search(line))]
 
-    loc_lines = [tidy_locnums(line) for line in loc_lines]
+    loc_lines_converted = [tidy_locnums(line) for line in loc_lines_toconvert]
+    loc_lines_alreadynums_tab = [tidy_locnums_comma2tab(line) for line in loc_lines_alreadynums]
+    loc_lines = loc_lines_converted
+    loc_lines.extend(loc_lines_alreadynums_tab)
+
 
     non_loc_lines = [keep_first_section(line, notes=True) for line in non_loc_lines]
     non_loc_lines = [keep_key_jpa(line, notes=True) for line in non_loc_lines]
